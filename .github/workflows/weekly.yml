@@ -1,0 +1,30 @@
+name: LobbyShotz Weekly
+on:
+  schedule:
+    - cron: "0 6 * * 1"   # Every Monday at 06:00 UTC (≈ 08:00 Europe/Malta)
+  workflow_dispatch: {}
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: 
+          node-version: '20'
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Scrape
+        run: node scrape.mjs
+      - name: Diff
+        run: node diff.mjs
+      - name: Build report
+        run: node build-report.mjs
+      - name: Publish to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: out/$(date -u +'%Y-%m-%d')
+          destination_dir: $(date -u +'%Y-%m-%d')
