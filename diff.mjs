@@ -15,7 +15,6 @@ const diffsDir = path.join(todayDir, "diffs");
 const report = { date: today, comparisons: [] };
 
 if (!fs.existsSync(todayDir)) {
-  // Create minimal structure and empty report so the workflow can continue
   fs.mkdirSync(todayDir, { recursive: true });
   fs.writeFileSync(path.join(todayDir, "report.json"), JSON.stringify(report, null, 2));
   console.warn(`No screenshots found at ${todayDir}; created empty report.`);
