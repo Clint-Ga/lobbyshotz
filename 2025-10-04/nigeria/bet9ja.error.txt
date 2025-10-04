@@ -1,4 +1,4 @@
-Failed 2025-10-04T13:22:40.311Z
+Failed 2025-10-04T13:24:44.694Z
 page.goto: net::ERR_HTTP2_PROTOCOL_ERROR at https://casino.bet9ja.com/
 Call log:
   - navigating to "https://casino.bet9ja.com/", waiting until "domcontentloaded"

@@ -1,4 +1,4 @@
-Failed 2025-10-04T13:22:51.131Z
+Failed 2025-10-04T13:24:57.005Z
 page.goto: net::ERR_NAME_NOT_RESOLVED at https://ng.1xbet.com/casino
 Call log:
   - navigating to "https://ng.1xbet.com/casino", waiting until "domcontentloaded"
