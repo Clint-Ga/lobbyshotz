@@ -12,16 +12,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: 
-          node-version: '20'
+        with: { node-version: '20' }
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - name: Scrape
         run: node scrape.mjs
-      - name: Diff
+      - name: Diff (non-fatal)
         run: node diff.mjs
-      - name: Build report
+      - name: Build report (non-fatal)
         run: node build-report.mjs
+      - name: Upload out/ as artifact (for debugging)
+        uses: actions/upload-artifact@v4
+        with:
+          name: lobbyshotz-out
+          path: out
       - name: Publish to gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
