@@ -1,7 +1,7 @@
 name: LobbyShotz Weekly
 on:
   schedule:
-    - cron: "0 6 * * 1"   # Every Monday at 06:00 UTC (≈ 08:00 Europe/Malta)
+    - cron: "0 6 * * 1"
   workflow_dispatch: {}
 
 jobs:
@@ -13,24 +13,51 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: '20' }
+
       - name: Install deps
         run: npm install --no-audit --no-fund
+
       - name: Install Playwright (Chromium + deps)
         run: npx playwright install --with-deps chromium
+
       - name: Scrape
         run: node scrape.mjs
+
       - name: Diff (non-fatal)
         run: node diff.mjs
+
       - name: Build report (non-fatal)
         run: node build-report.mjs
+
+      - name: Prepare site folder (date + latest + homepage redirect)
+        run: |
+          set -e
+          DATE=$(date -u +'%Y-%m-%d')
+          rm -rf site
+          mkdir -p site
+          # copy dated build
+          cp -r "out/$DATE" "site/$DATE"
+          # copy to /latest
+          rm -rf site/latest
+          cp -r "out/$DATE" "site/latest"
+          # simple homepage that redirects to /latest/
+          cat > site/index.html <<'HTML'
+          <!doctype html>
+          <meta charset="utf-8">
+          <title>LobbyShotz</title>
+          <meta http-equiv="refresh" content="0; url=latest/">
+          <p>Redirecting to <a href="latest/">latest</a>…</p>
+          HTML
+
       - name: Upload out/ as artifact (for debugging)
         uses: actions/upload-artifact@v4
         with:
           name: lobbyshotz-out
           path: out
-      - name: Publish to gh-pages
+
+      - name: Publish to gh-pages (root contains both /latest and dated folder)
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: out/$(date -u +'%Y-%m-%d')
-          destination_dir: $(date -u +'%Y-%m-%d')
+          publish_dir: site
+          destination_dir: .
